@@ -18,10 +18,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # load preprocessed scRNA-seq and spatial datasets
-RNA = scv.read('SRV_data/RNA_adata.h5ad')
-HybISS = scv.read('SRV_data/HybISS_adata.h5ad')
+RNA = scv.read('SIRV_data/RNA_adata.h5ad')
+HybISS = scv.read('SIRV_data/HybISS_adata.h5ad')
 
-# Apply SRV to integrate both datasets and predict the un/spliced expressions
+# Apply SIRV to integrate both datasets and predict the un/spliced expressions
 # for the spatially measured genes, additionally transfer 'Region', 'Class' and
 # 'Subclass' label annotations from scRNA-seq to spatial data
 HybISS_imputed = SIRV(HybISS,RNA,50,['Tissue','Region','Class','Subclass'])
