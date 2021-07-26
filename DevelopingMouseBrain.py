@@ -12,8 +12,8 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from sklearn.metrics.cluster import contingency_matrix
 import sys
-sys.path.insert(1,'SRV/')
-from main import SRV
+sys.path.insert(1,'SIRV/')
+from main import SIRV
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -24,7 +24,7 @@ HybISS = scv.read('SRV_data/HybISS_adata.h5ad')
 # Apply SRV to integrate both datasets and predict the un/spliced expressions
 # for the spatially measured genes, additionally transfer 'Region', 'Class' and
 # 'Subclass' label annotations from scRNA-seq to spatial data
-HybISS_imputed = SRV(HybISS,RNA,50,['Tissue','Region','Class','Subclass'])
+HybISS_imputed = SIRV(HybISS,RNA,50,['Tissue','Region','Class','Subclass'])
 
 # Normalize the imputed un/spliced expressions, this will also re-normalize the
 # full spatial mRNA 'X', this needs to be undone 
