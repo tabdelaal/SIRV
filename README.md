@@ -15,4 +15,4 @@ The ```DevelopingMouseBrain.py``` script shows how to reproduce the results obta
 
 The processed spatial (HybISS) and scRNA-seq datasets of the Developing Mouse Brain can be downloaded as ```scanpy Anndata .h5``` files from [Surfdrive](https://surfdrive.surf.nl/files/index.php/s/11LsBOAmRhDEZOJ)
 
-For citation and further information please refer to: "SIRV: Spatial inference of RNA velocity at the single-cell resolution", [bioRxiv2021](https://www.biorxiv.org/content/10.1101/2021.07.26.453774v)
+For citation and further information please refer to: "SIRV: Spatial inference of RNA velocity at the single-cell resolution", [bioRxiv2021](https://www.biorxiv.org/content/10.1101/2021.07.26.453774v1)
