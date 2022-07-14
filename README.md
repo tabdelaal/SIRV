@@ -9,10 +9,10 @@ For full description, please check the ```SIRV``` function description in ```mai
 
 ### Results reproducibility
 
-The ```DevelopingMouseBrain.py``` script shows how to reproduce the results obtained in the preprint when testing SRV on the Developing Mouse Brain Atlas data.
+The ```Notebooks``` folder contains scripts showing how to reproduce the results when testing SIRV on the developing chicken heart, developing mouse brain, and mouse organogenesis datasets.
 
 ### Datasets
 
-The processed spatial (HybISS) and scRNA-seq datasets of the Developing Mouse Brain can be downloaded as ```scanpy Anndata .h5``` files from [Surfdrive](https://surfdrive.surf.nl/files/index.php/s/11LsBOAmRhDEZOJ)
+All processed spatial and scRNA-seq datasets can be downloaded as ```scanpy Anndata .h5``` files from [Zenodo](https://doi.org/10.5281/zenodo.6798659)
 
 For citation and further information please refer to: "SIRV: Spatial inference of RNA velocity at the single-cell resolution", [bioRxiv2021](https://www.biorxiv.org/content/10.1101/2021.07.26.453774v1)
