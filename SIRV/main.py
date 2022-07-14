@@ -17,6 +17,7 @@ References
 import numpy as np
 import pandas as pd
 import scipy.stats as st
+import scipy
 import scvelo as scv
 from sklearn.neighbors import NearestNeighbors
 from principal_vectors import PVComputation
@@ -30,9 +31,9 @@ def SIRV(Spatial_data,RNA_data,n_pv,metadata_to_transfer=None):
         
         Parameters
         -------
-        Spatial_data : scvelo Anndata Object
+        Spatial_data : Anndata Object
             Normalized Spatial data matrix (cells X genes).
-        RNA_data : scvelo Anndata Object
+        RNA_data : Anndata Object
             Contains normalized gene expression, spliced and unspliced data 
             (cells X genes), and cellular metadata (obs).
         n_pv : int
@@ -57,16 +58,26 @@ def SIRV(Spatial_data,RNA_data,n_pv,metadata_to_transfer=None):
     else:
         Annotate_cells = True
         
+    K = 50
+        
     RNA_data_scaled = pd.DataFrame(data=st.zscore(RNA_data.to_df(),axis=0),
                             index = RNA_data.to_df().index,columns=RNA_data.to_df().columns)
     Spatial_data_scaled = pd.DataFrame(data=st.zscore(Spatial_data.to_df(),axis=0),
                             index = Spatial_data.to_df().index,columns=Spatial_data.to_df().columns)
-    Common_data = RNA_data_scaled[np.intersect1d(RNA_data_scaled.columns,Spatial_data_scaled.columns)]
-    
-    RNA_data_spliced = pd.DataFrame(RNA_data.layers['spliced'],columns=RNA_data.to_df().columns)
-    RNA_data_unspliced = pd.DataFrame(RNA_data.layers['unspliced'],columns=RNA_data.to_df().columns)
     
     genes_to_predict = np.intersect1d(RNA_data.to_df().columns,Spatial_data.to_df().columns)
+    
+    Common_data = RNA_data_scaled[np.intersect1d(RNA_data_scaled.columns,Spatial_data_scaled.columns)]
+    
+    if type(RNA_data.layers['spliced']) == scipy.sparse.csc.csc_matrix :
+        RNA_data_spliced = pd.DataFrame(RNA_data.layers['spliced'].toarray(),columns=RNA_data.to_df().columns)
+        RNA_data_unspliced = pd.DataFrame(RNA_data.layers['unspliced'].toarray(),columns=RNA_data.to_df().columns)
+    else:
+        RNA_data_spliced = pd.DataFrame(RNA_data.layers['spliced'],columns=RNA_data.to_df().columns)
+        RNA_data_unspliced = pd.DataFrame(RNA_data.layers['unspliced'],columns=RNA_data.to_df().columns)
+    
+    RNA_data_spliced = RNA_data_spliced[genes_to_predict]
+    RNA_data_unspliced = RNA_data_unspliced[genes_to_predict]
     
     Imp_Genes_spliced = pd.DataFrame(np.zeros((Spatial_data.shape[0],len(genes_to_predict))),
                                  index=Spatial_data_scaled.index,columns=genes_to_predict)
@@ -90,18 +101,18 @@ def SIRV(Spatial_data,RNA_data,n_pv,metadata_to_transfer=None):
     Common_data_projected = Common_data.dot(S)
     Spatial_data_projected = Spatial_data_scaled[Common_data.columns].dot(S)
         
-    nbrs = NearestNeighbors(n_neighbors=50, algorithm='auto',
+    nbrs = NearestNeighbors(n_neighbors=K, algorithm='auto',
                             metric = 'cosine').fit(Common_data_projected)
     distances, indices = nbrs.kneighbors(Spatial_data_projected)
     
-    weights = np.zeros((Spatial_data.shape[0],50))
+    weights = np.zeros((Spatial_data.shape[0],K))
     
     for j in range(0,Spatial_data.shape[0]):
     
         weights[j,:] = 1-(distances[j,:][distances[j,:]<1])/(np.sum(distances[j,:][distances[j,:]<1]))
         weights[j,:] = weights[j,:]/(len(weights[j,:])-1)
-        Imp_Genes_spliced.iloc[j,:] = np.dot(weights[j,:],RNA_data_spliced[genes_to_predict].iloc[indices[j,:][distances[j,:] < 1]])
-        Imp_Genes_unspliced.iloc[j,:] = np.dot(weights[j,:],RNA_data_unspliced[genes_to_predict].iloc[indices[j,:][distances[j,:] < 1]])
+        Imp_Genes_spliced.iloc[j,:] = np.dot(weights[j,:],RNA_data_spliced.iloc[indices[j,:][distances[j,:] < 1]])
+        Imp_Genes_unspliced.iloc[j,:] = np.dot(weights[j,:],RNA_data_unspliced.iloc[indices[j,:][distances[j,:] < 1]])
         
     dic = {}
     dic['spliced'] = Imp_Genes_spliced
@@ -115,7 +126,7 @@ def SIRV(Spatial_data,RNA_data,n_pv,metadata_to_transfer=None):
             Pred_Labels = pd.Series(index=Spatial_data_scaled.index)
             
             for j in range(0,Spatial_data.shape[0]):
-                for k in range(50):
+                for k in range(K):
                     Pred_Labels_prob[RNA_labels[indices[j,k]]][j] += weights[j,k]
     
                 Pred_Labels.iloc[j] = Pred_Labels_prob.columns[np.argmax(Pred_Labels_prob.iloc[j,:])]
