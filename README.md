@@ -15,4 +15,4 @@ The ```Notebooks``` folder contains scripts showing how to reproduce the results
 
 All processed spatial and scRNA-seq datasets can be downloaded as ```scanpy Anndata .h5``` files from [Zenodo](https://doi.org/10.5281/zenodo.6798659)
 
-For citation and further information please refer to: "SIRV: Spatial inference of RNA velocity at the single-cell resolution", [bioRxiv2021](https://www.biorxiv.org/content/10.1101/2021.07.26.453774v1)
+For citation and further information please refer to: "SIRV: Spatial inference of RNA velocity at the single-cell resolution", [NAR Genomics and Bioinformatics](https://academic.oup.com/nargab/article/6/3/lqae100/7728020)
